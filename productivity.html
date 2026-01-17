@@ -558,7 +558,8 @@
                             alert('Break complete! Ready for another session?');
                             isBreakMode = false;
                             document.getElementById('skipBreakBtn').style.display = 'none';
-                            resetTimer();
+                            timeLeft = focusDuration * 60;
+                            updateDisplay();
                         }
                     }
                 }, 1000);
