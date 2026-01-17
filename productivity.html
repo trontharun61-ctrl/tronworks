@@ -504,6 +504,7 @@
         let sessionsCompleted = 0;
         let sessionStartTime = null;
         let isBreakMode = false;
+        let savedFocusTime = 0; // Store remaining focus time when break starts
 
         function updateDisplay() {
             const minutes = Math.floor(timeLeft / 60);
@@ -547,7 +548,8 @@
                             
                             alert('Pomodoro session complete! Time for a break.');
                             
-                            // Auto start break
+                            // Save current focus time and auto start break
+                            savedFocusTime = 0; // Session completed fully
                             const breakTime = (sessionsCompleted % sessionsBeforeLongBreak === 0) ? longBreakDuration : breakDuration;
                             timeLeft = breakTime * 60;
                             isBreakMode = true;
@@ -584,6 +586,7 @@
 
         function setBreak() {
             pauseTimer();
+            savedFocusTime = timeLeft; // Save current focus time
             timeLeft = breakDuration * 60;
             isBreakMode = true;
             document.getElementById('skipBreakBtn').style.display = 'block';
@@ -595,9 +598,16 @@
             pauseTimer();
             isBreakMode = false;
             document.getElementById('skipBreakBtn').style.display = 'none';
-            timeLeft = focusDuration * 60;
+            
+            // Restore the saved focus time or start fresh if session was completed
+            if (savedFocusTime > 0) {
+                timeLeft = savedFocusTime;
+            } else {
+                timeLeft = focusDuration * 60;
+            }
+            
             updateDisplay();
-            document.getElementById('focusStatus').textContent = 'Ready to focus';
+            document.getElementById('focusStatus').textContent = 'Ready to continue';
         }
 
         function testTimer() {
