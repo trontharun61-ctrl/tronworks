@@ -503,6 +503,7 @@
         let isRunning = false;
         let sessionsCompleted = 0;
         let sessionStartTime = null;
+        let isBreakMode = false;
 
         function updateDisplay() {
             const minutes = Math.floor(timeLeft / 60);
@@ -515,26 +516,50 @@
             if (!isRunning) {
                 isRunning = true;
                 sessionStartTime = new Date();
-                document.getElementById('focusStatus').textContent = '🔥 Focus Mode Active';
+                
+                if (!isBreakMode) {
+                    showTomato();
+                    document.getElementById('focusStatus').textContent = '🔥 Focus Mode Active';
+                } else {
+                    document.getElementById('focusStatus').textContent = '☕ Break Time';
+                }
+                
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     updateDisplay();
                     
                     if (timeLeft <= 0) {
                         pauseTimer();
-                        sessionsCompleted++;
-                        document.getElementById('sessionCount').textContent = 
-                            `Sessions completed: ${sessionsCompleted}`;
-                        document.getElementById('focusStatus').textContent = '🎉 Session Complete!';
+                        hideTomato();
                         
-                        logToGitHub({
-                            sessionNumber: sessionsCompleted,
-                            duration: 25,
-                            status: 'Completed',
-                            startTime: sessionStartTime
-                        });
-                        
-                        alert('Pomodoro session complete! Time for a break.');
+                        if (!isBreakMode) {
+                            sessionsCompleted++;
+                            document.getElementById('sessionCount').textContent = 
+                                `Sessions completed: ${sessionsCompleted}`;
+                            document.getElementById('focusStatus').textContent = '🎉 Session Complete!';
+                            
+                            logToGitHub({
+                                sessionNumber: sessionsCompleted,
+                                duration: focusDuration,
+                                status: 'Completed',
+                                startTime: sessionStartTime
+                            });
+                            
+                            alert('Pomodoro session complete! Time for a break.');
+                            
+                            // Auto start break
+                            const breakTime = (sessionsCompleted % sessionsBeforeLongBreak === 0) ? longBreakDuration : breakDuration;
+                            timeLeft = breakTime * 60;
+                            isBreakMode = true;
+                            document.getElementById('skipBreakBtn').style.display = 'block';
+                            updateDisplay();
+                        } else {
+                            document.getElementById('focusStatus').textContent = '✅ Break Complete!';
+                            alert('Break complete! Ready for another session?');
+                            isBreakMode = false;
+                            document.getElementById('skipBreakBtn').style.display = 'none';
+                            resetTimer();
+                        }
                     }
                 }, 1000);
             }
@@ -544,25 +569,39 @@
             isRunning = false;
             clearInterval(timerInterval);
             document.getElementById('focusStatus').textContent = '⏸️ Paused';
+            hideTomato();
         }
 
         function resetTimer() {
             pauseTimer();
-            timeLeft = 25 * 60;
+            timeLeft = focusDuration * 60;
+            isBreakMode = false;
+            document.getElementById('skipBreakBtn').style.display = 'none';
             updateDisplay();
             document.getElementById('focusStatus').textContent = 'Ready to focus';
         }
 
         function setBreak() {
             pauseTimer();
-            timeLeft = 5 * 60;
+            timeLeft = breakDuration * 60;
+            isBreakMode = true;
+            document.getElementById('skipBreakBtn').style.display = 'block';
             updateDisplay();
             document.getElementById('focusStatus').textContent = '☕ Break Time';
+        }
+
+        function skipBreak() {
+            pauseTimer();
+            isBreakMode = false;
+            document.getElementById('skipBreakBtn').style.display = 'none';
+            resetTimer();
+            alert('Break skipped! Starting new focus session.');
         }
 
         function testTimer() {
             pauseTimer();
             timeLeft = 10;
+            isBreakMode = false;
             updateDisplay();
             document.getElementById('focusStatus').textContent = '🧪 Test Mode (10 seconds)';
         }
