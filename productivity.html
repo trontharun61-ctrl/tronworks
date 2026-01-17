@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .tool-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        /* Pomodoro Timer */
+        .timer-display {
+            font-size: 4em;
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .timer-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Todo List */
+        .todo-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            background: #f5f5f5;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .todo-item.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+
+        /* Notes */
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        /* Focus Mode */
+        .focus-status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 15px 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .session-count {
+            text-align: center;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Productivity Hub</h1>
+        
+        <div class="tools-grid">
+            <!-- Pomodoro Timer -->
+            <div class="tool-card">
+                <h2>🍅 Pomodoro Timer</h2>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="focus-status" id="focusStatus">Ready to focus</div>
+                <div class="session-count" id="sessionCount">Sessions completed: 0</div>
+                <div class="timer-buttons">
+                    <button onclick="startTimer()">Start</button>
+                    <button onclick="pauseTimer()">Pause</button>
+                    <button onclick="resetTimer()">Reset</button>
+                    <button onclick="setBreak()">Break (5min)</button>
+                </div>
+            </div>
+
+            <!-- Todo List -->
+            <div class="tool-card">
+                <h2>✅ Todo List</h2>
+                <div class="todo-input">
+                    <input type="text" id="todoInput" placeholder="Add a new task...">
+                    <button onclick="addTodo()">Add</button>
+                </div>
+                <ul class="todo-list" id="todoList"></ul>
+            </div>
+
+            <!-- Quick Notes -->
+            <div class="tool-card">
+                <h2>📝 Quick Notes</h2>
+                <textarea id="notes" placeholder="Write your notes here..."></textarea>
+                <button onclick="saveNotes()" style="margin-top: 10px; width: 100%;">Save Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pomodoro Timer
+        let timeLeft = 25 * 60;
+        let timerInterval = null;
+        let isRunning = false;
+        let sessionsCompleted = 0;
+
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                document.getElementById('focusStatus').textContent = '🔥 Focus Mode Active';
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        pauseTimer();
+                        sessionsCompleted++;
+                        document.getElementById('sessionCount').textContent = 
+                            `Sessions completed: ${sessionsCompleted}`;
+                        document.getElementById('focusStatus').textContent = '🎉 Session Complete!';
+                        alert('Pomodoro session complete! Time for a break.');
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('focusStatus').textContent = '⏸️ Paused';
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeLeft = 25 * 60;
+            updateDisplay();
+            document.getElementById('focusStatus').textContent = 'Ready to focus';
+        }
+
+        function setBreak() {
+            pauseTimer();
+            timeLeft = 5 * 60;
+            updateDisplay();
+            document.getElementById('focusStatus').textContent = '☕ Break Time';
+        }
+
+        // Todo List
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+
+        function renderTodos() {
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = '';
+            
+            todos.forEach((todo, index) => {
+                const li = document.createElement('li');
+                li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                li.innerHTML = `
+                    <span onclick="toggleTodo(${index})" style="cursor: pointer; flex: 1;">${todo.text}</span>
+                    <button class="delete-btn" onclick="deleteTodo(${index})">Delete</button>
+                `;
+                todoList.appendChild(li);
+            });
+        }
+
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            
+            if (text) {
+                todos.push({ text, completed: false });
+                localStorage.setItem('todos', JSON.stringify(todos));
+                input.value = '';
+                renderTodos();
+            }
+        }
+
+        function toggleTodo(index) {
+            todos[index].completed = !todos[index].completed;
+            localStorage.setItem('todos', JSON.stringify(todos));
+            renderTodos();
+        }
+
+        function deleteTodo(index) {
+            todos.splice(index, 1);
+            localStorage.setItem('todos', JSON.stringify(todos));
+            renderTodos();
+        }
+
+        document.getElementById('todoInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTodo();
+        });
+
+        // Notes
+        const notesArea = document.getElementById('notes');
+        notesArea.value = localStorage.getItem('notes') || '';
+
+        function saveNotes() {
+            localStorage.setItem('notes', notesArea.value);
+            alert('Notes saved!');
+        }
+
+        // Auto-save notes every 30 seconds
+        setInterval(() => {
+            localStorage.setItem('notes', notesArea.value);
+        }, 30000);
+
+        // Initialize
+        renderTodos();
+    </script>
+</body>
+</html>
