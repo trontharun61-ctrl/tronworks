@@ -178,8 +178,8 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 160px;
-            height: 180px;
+            width: 180px;
+            height: 200px;
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.5s;
@@ -193,147 +193,155 @@
             width: 100%;
             height: 100%;
             position: relative;
-            animation: subtle-bounce 2s ease-in-out infinite;
+            animation: subtle-float 3s ease-in-out infinite;
         }
 
-        @keyframes subtle-bounce {
+        @keyframes subtle-float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
+            50% { transform: translateY(-8px); }
         }
 
+        /* Tomato Top (stem area) */
         .tomato-top {
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 40px;
-            height: 25px;
-            background: #2d5016;
+            width: 70px;
+            height: 35px;
+            background: linear-gradient(180deg, #ff8a8a 0%, #ff6b6b 100%);
             border-radius: 50% 50% 0 0;
             z-index: 10;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.2);
         }
 
-        .tomato-knob {
+        .tomato-stem {
             position: absolute;
-            top: -8px;
+            top: -5px;
             left: 50%;
             transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
-            background: #3d6b1f;
-            border-radius: 50%;
-            border: 3px solid #2d5016;
+            width: 25px;
+            height: 15px;
+            background: #4a5568;
+            border-radius: 50% 50% 0 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
+        /* Main tomato body */
         .tomato-body {
             position: absolute;
-            width: 140px;
-            height: 140px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #d63031 100%);
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle at 30% 30%, #ff8787, #ff6b6b 40%, #ee5a6f 70%, #d63031);
+            border-radius: 50%;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 
+                inset -20px -20px 40px rgba(0,0,0,0.3),
+                inset 20px 20px 40px rgba(255,255,255,0.15),
+                0 25px 60px rgba(0,0,0,0.5);
+        }
+
+        /* Glossy highlight */
+        .tomato-highlight {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4), transparent);
             border-radius: 50%;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 
-                inset -15px -15px 30px rgba(0,0,0,0.3),
-                inset 15px 15px 30px rgba(255,255,255,0.2),
-                0 20px 50px rgba(0,0,0,0.4);
-            border: 3px solid #c92a2a;
+            left: 30px;
         }
 
-        .timer-face {
+        /* Timer band (middle section with numbers) */
+        .timer-band {
             position: absolute;
-            width: 110px;
-            height: 110px;
-            background: radial-gradient(circle, #fff 0%, #f8f9fa 100%);
-            border-radius: 50%;
+            width: 100%;
+            height: 50px;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 
-                inset 0 2px 5px rgba(0,0,0,0.1),
-                0 2px 10px rgba(0,0,0,0.2);
+            left: 0;
+            transform: translateY(-50%);
+            overflow: hidden;
         }
 
-        .timer-dial {
+        .timer-band-inner {
             position: absolute;
             width: 100%;
             height: 100%;
-            animation: rotate-dial 60s linear infinite;
+            animation: none;
+            transition: transform 0.3s linear;
         }
 
-        @keyframes rotate-dial {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .dial-marks {
+        .band-marks {
             position: absolute;
             width: 100%;
             height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .dial-mark {
+        .band-track {
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            top: 50%;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .band-mark {
             position: absolute;
             width: 2px;
-            height: 8px;
-            background: #495057;
-            left: 50%;
-            top: 8px;
-            transform-origin: 50% 47px;
-            margin-left: -1px;
+            height: 10px;
+            background: white;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-        .dial-mark.major {
-            height: 12px;
+        .band-mark.major {
+            height: 15px;
             width: 3px;
-            background: #212529;
-            margin-left: -1.5px;
         }
 
-        .dial-number {
+        .band-number {
             position: absolute;
-            font-size: 14px;
+            color: white;
             font-weight: bold;
-            color: #212529;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .timer-center-display {
-            position: absolute;
+            font-size: 18px;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #e74c3c;
-            font-size: 20px;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-            z-index: 5;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transform: translateY(-50%);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-family: Arial, sans-serif;
         }
 
-        .timer-center-dot {
+        /* White triangle indicator */
+        .timer-indicator {
             position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #212529;
-            border-radius: 50%;
-            top: 50%;
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 18px solid white;
             left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 6;
+            bottom: -18px;
+            transform: translateX(-50%);
+            z-index: 15;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
         }
 
-        .tomato-base {
+        /* Digital display */
+        .timer-digital {
             position: absolute;
-            bottom: 0;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 30px;
-            background: #c92a2a;
-            border-radius: 0 0 60px 60px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            z-index: 5;
         }
 
         /* Settings Modal */
@@ -428,18 +436,18 @@
     <div class="floating-tomato" id="floatingTomato">
         <div class="tomato-container">
             <div class="tomato-top">
-                <div class="tomato-knob"></div>
+                <div class="tomato-stem"></div>
             </div>
             <div class="tomato-body">
-                <div class="timer-face">
-                    <div class="timer-dial" id="timerDial">
-                        <div class="dial-marks" id="dialMarks"></div>
+                <div class="tomato-highlight"></div>
+                <div class="timer-band">
+                    <div class="timer-band-inner" id="timerBandInner">
+                        <div class="band-marks" id="bandMarks"></div>
                     </div>
-                    <div class="timer-center-dot"></div>
-                    <div class="timer-center-display" id="floatingTimer">25:00</div>
+                    <div class="timer-indicator"></div>
                 </div>
+                <div class="timer-digital" id="floatingTimer">25:00</div>
             </div>
-            <div class="tomato-base"></div>
         </div>
     </div>""
 
@@ -562,55 +570,51 @@
             document.getElementById('floatingTomato').classList.remove('active');
         }
 
-        // Create timer marks (like a real Pomodoro timer)
+        // Create timer marks on the band (like a real Pomodoro timer)
         function createTimerMarks() {
-            const marksContainer = document.getElementById('dialMarks');
-            const totalMarks = 60; // 60 marks for minutes
+            const marksContainer = document.getElementById('bandMarks');
+            const totalMinutes = 60;
+            const pixelsPerMinute = 8; // spacing between marks
+            const totalWidth = totalMinutes * pixelsPerMinute;
             
-            for (let i = 0; i < totalMarks; i++) {
+            marksContainer.style.width = totalWidth + 'px';
+            marksContainer.style.position = 'relative';
+            marksContainer.style.left = '50%';
+            
+            for (let i = 0; i <= totalMinutes; i++) {
                 const mark = document.createElement('div');
-                mark.className = 'dial-mark';
+                mark.className = 'band-mark';
+                mark.style.left = (i * pixelsPerMinute) + 'px';
                 
                 // Every 5 minutes is a major mark with number
                 if (i % 5 === 0) {
                     mark.classList.add('major');
                     
-                    // Add numbers at 0, 15, 30, 45
-                    if (i % 15 === 0) {
-                        const number = document.createElement('div');
-                        number.className = 'dial-number';
-                        number.textContent = i === 0 ? '60' : i;
-                        
-                        // Position numbers around the dial
-                        const angle = (i * 6 - 90) * Math.PI / 180;
-                        const radius = 35;
-                        const x = 50 + radius * Math.cos(angle);
-                        const y = 50 + radius * Math.sin(angle);
-                        
-                        number.style.left = x + '%';
-                        number.style.top = y + '%';
-                        number.style.transform = 'translate(-50%, -50%)';
-                        marksContainer.appendChild(number);
-                    }
+                    const number = document.createElement('div');
+                    number.className = 'band-number';
+                    number.textContent = i;
+                    number.style.left = (i * pixelsPerMinute) + 'px';
+                    number.style.top = '-20px';
+                    number.style.transform = 'translateX(-50%)';
+                    marksContainer.appendChild(number);
                 }
                 
-                // Rotate each mark around the circle
-                mark.style.transform = `rotate(${i * 6}deg)`;
                 marksContainer.appendChild(mark);
             }
         }
 
-        // Update dial rotation based on time
+        // Update band position based on time
         function updateDialRotation() {
             const totalSeconds = focusDuration * 60;
-            const remainingSeconds = timeLeft;
-            const progress = (totalSeconds - remainingSeconds) / totalSeconds;
-            const rotation = progress * 360;
+            const elapsedSeconds = totalSeconds - timeLeft;
+            const minutes = elapsedSeconds / 60;
+            const pixelsPerMinute = 8;
             
-            const dial = document.getElementById('timerDial');
-            if (dial) {
-                dial.style.animation = 'none';
-                dial.style.transform = `rotate(${rotation}deg)`;
+            // Move the band to show current time at the indicator
+            const offset = -(minutes * pixelsPerMinute);
+            const bandInner = document.getElementById('timerBandInner');
+            if (bandInner) {
+                bandInner.style.transform = `translateX(${offset}px)`;
             }
         }
 
