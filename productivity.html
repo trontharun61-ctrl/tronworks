@@ -48,7 +48,6 @@
             margin-bottom: 15px;
         }
 
-        /* Pomodoro Timer */
         .timer-display {
             font-size: 4em;
             text-align: center;
@@ -83,7 +82,6 @@
             transform: scale(0.95);
         }
 
-        /* Todo List */
         .todo-input {
             display: flex;
             gap: 10px;
@@ -123,7 +121,6 @@
             font-size: 0.9em;
         }
 
-        /* Notes */
         textarea {
             width: 100%;
             min-height: 150px;
@@ -135,7 +132,6 @@
             resize: vertical;
         }
 
-        /* Focus Mode */
         .focus-status {
             text-align: center;
             font-size: 1.2em;
@@ -149,9 +145,185 @@
             color: #666;
             margin-top: 10px;
         }
+
+        .github-config {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .github-config input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .github-status {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .github-status.success {
+            color: #27ae60;
+        }
+
+        .github-status.error {
+            color: #e74c3c;
+        }
+
+        /* Floating Tomato */
+        .floating-tomato {
+            position: fixed;
+            font-size: 80px;
+            animation: float 20s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .floating-tomato.active {
+            opacity: 0.8;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(80vw, 20vh) rotate(90deg);
+            }
+            50% {
+                transform: translate(70vw, 70vh) rotate(180deg);
+            }
+            75% {
+                transform: translate(10vw, 60vh) rotate(270deg);
+            }
+        }
+
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .settings-modal.active {
+            display: flex;
+        }
+
+        .settings-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .settings-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .setting-item {
+            margin-bottom: 20px;
+        }
+
+        .setting-item label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .setting-item input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .settings-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .settings-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 24px;
+            z-index: 1500;
+        }
+
+        .settings-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .skip-break-btn {
+            background: #f39c12;
+            margin-top: 10px;
+        }
+
+        .skip-break-btn:hover {
+            background: #e67e22;
+        }
     </style>
 </head>
 <body>
+    <!-- Floating Tomato -->
+    <div class="floating-tomato" id="floatingTomato">🍅</div>
+
+    <!-- Settings Icon -->
+    <div class="settings-icon" onclick="openSettings()">⚙️</div>
+
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-content">
+            <h2>⚙️ Pomodoro Settings</h2>
+            <div class="setting-item">
+                <label>Focus Duration (minutes):</label>
+                <input type="number" id="focusDuration" value="25" min="1" max="60">
+            </div>
+            <div class="setting-item">
+                <label>Break Duration (minutes):</label>
+                <input type="number" id="breakDuration" value="5" min="1" max="30">
+            </div>
+            <div class="setting-item">
+                <label>Long Break Duration (minutes):</label>
+                <input type="number" id="longBreakDuration" value="15" min="1" max="60">
+            </div>
+            <div class="setting-item">
+                <label>Sessions before Long Break:</label>
+                <input type="number" id="sessionsBeforeLongBreak" value="4" min="1" max="10">
+            </div>
+            <div class="settings-buttons">
+                <button onclick="saveSettings()" style="flex: 1;">Save Settings</button>
+                <button onclick="closeSettings()" style="flex: 1; background: #95a5a6;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <h1>🚀 Productivity Hub</h1>
         
@@ -166,7 +338,15 @@
                     <button onclick="startTimer()">Start</button>
                     <button onclick="pauseTimer()">Pause</button>
                     <button onclick="resetTimer()">Reset</button>
-                    <button onclick="setBreak()">Break (5min)</button>
+                    <button onclick="setBreak()">Break</button>
+                    <button onclick="testTimer()">Test (10sec)</button>
+                    <button class="skip-break-btn" onclick="skipBreak()" id="skipBreakBtn" style="display: none; width: 100%;">Skip Break & Continue</button>
+                </div>
+                <div class="github-config">
+                    <input type="text" id="githubToken" placeholder="GitHub Token (paste here)" style="font-size: 0.9em;">
+                    <input type="text" id="githubRepo" placeholder="username/repo" value="trontharun61-ctrl/tronworks" style="font-size: 0.9em;">
+                    <button onclick="saveGitHubConfig()" style="width: 100%; font-size: 0.9em;">Save GitHub Config</button>
+                    <div class="github-status" id="githubStatus"></div>
                 </div>
             </div>
 
@@ -190,11 +370,139 @@
     </div>
 
     <script>
+        // Settings
+        let focusDuration = parseInt(localStorage.getItem('focusDuration')) || 25;
+        let breakDuration = parseInt(localStorage.getItem('breakDuration')) || 5;
+        let longBreakDuration = parseInt(localStorage.getItem('longBreakDuration')) || 15;
+        let sessionsBeforeLongBreak = parseInt(localStorage.getItem('sessionsBeforeLongBreak')) || 4;
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+            document.getElementById('focusDuration').value = focusDuration;
+            document.getElementById('breakDuration').value = breakDuration;
+            document.getElementById('longBreakDuration').value = longBreakDuration;
+            document.getElementById('sessionsBeforeLongBreak').value = sessionsBeforeLongBreak;
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        function saveSettings() {
+            focusDuration = parseInt(document.getElementById('focusDuration').value);
+            breakDuration = parseInt(document.getElementById('breakDuration').value);
+            longBreakDuration = parseInt(document.getElementById('longBreakDuration').value);
+            sessionsBeforeLongBreak = parseInt(document.getElementById('sessionsBeforeLongBreak').value);
+
+            localStorage.setItem('focusDuration', focusDuration);
+            localStorage.setItem('breakDuration', breakDuration);
+            localStorage.setItem('longBreakDuration', longBreakDuration);
+            localStorage.setItem('sessionsBeforeLongBreak', sessionsBeforeLongBreak);
+
+            closeSettings();
+            resetTimer();
+            alert('Settings saved!');
+        }
+
+        // Floating Tomato
+        function showTomato() {
+            document.getElementById('floatingTomato').classList.add('active');
+        }
+
+        function hideTomato() {
+            document.getElementById('floatingTomato').classList.remove('active');
+        }
+
+        // GitHub Configuration
+        let githubToken = localStorage.getItem('githubToken') || '';
+        let githubRepo = localStorage.getItem('githubRepo') || 'trontharun61-ctrl/tronworks';
+        
+        if (githubToken) {
+            document.getElementById('githubToken').value = '••••••••';
+        }
+        document.getElementById('githubRepo').value = githubRepo;
+
+        function saveGitHubConfig() {
+            const tokenInput = document.getElementById('githubToken').value;
+            const repoInput = document.getElementById('githubRepo').value;
+            
+            if (tokenInput && tokenInput !== '••••••••') {
+                githubToken = tokenInput;
+                localStorage.setItem('githubToken', githubToken);
+            }
+            
+            githubRepo = repoInput;
+            localStorage.setItem('githubRepo', githubRepo);
+            
+            document.getElementById('githubStatus').textContent = '✓ Config saved';
+            document.getElementById('githubStatus').className = 'github-status success';
+            document.getElementById('githubToken').value = '••••••••';
+        }
+
+        async function logToGitHub(sessionData) {
+            if (!githubToken) {
+                document.getElementById('githubStatus').textContent = '✗ No token configured';
+                document.getElementById('githubStatus').className = 'github-status error';
+                return;
+            }
+
+            document.getElementById('githubStatus').textContent = '⏳ Logging...';
+            const logFileName = 'pomodoro-logs.md';
+            const timestamp = new Date().toISOString();
+            const logEntry = `\n## Session ${sessionData.sessionNumber}\n- Date: ${timestamp}\n- Duration: ${sessionData.duration} minutes\n- Status: ${sessionData.status}\n\n`;
+
+            try {
+                const getResponse = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${logFileName}`, {
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                let content = '# Pomodoro Session Logs\n\n';
+                let sha = null;
+
+                if (getResponse.ok) {
+                    const data = await getResponse.json();
+                    content = atob(data.content);
+                    sha = data.sha;
+                }
+
+                content += logEntry;
+
+                const updateResponse = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${logFileName}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Log Pomodoro session ${sessionData.sessionNumber}`,
+                        content: btoa(content),
+                        sha: sha
+                    })
+                });
+
+                if (updateResponse.ok) {
+                    document.getElementById('githubStatus').textContent = '✓ Logged to GitHub!';
+                    document.getElementById('githubStatus').className = 'github-status success';
+                } else {
+                    const errorData = await updateResponse.json();
+                    throw new Error(errorData.message || 'Failed');
+                }
+            } catch (error) {
+                document.getElementById('githubStatus').textContent = `✗ Error: ${error.message}`;
+                document.getElementById('githubStatus').className = 'github-status error';
+            }
+        }
+
         // Pomodoro Timer
         let timeLeft = 25 * 60;
         let timerInterval = null;
         let isRunning = false;
         let sessionsCompleted = 0;
+        let sessionStartTime = null;
 
         function updateDisplay() {
             const minutes = Math.floor(timeLeft / 60);
@@ -206,6 +514,7 @@
         function startTimer() {
             if (!isRunning) {
                 isRunning = true;
+                sessionStartTime = new Date();
                 document.getElementById('focusStatus').textContent = '🔥 Focus Mode Active';
                 timerInterval = setInterval(() => {
                     timeLeft--;
@@ -217,6 +526,14 @@
                         document.getElementById('sessionCount').textContent = 
                             `Sessions completed: ${sessionsCompleted}`;
                         document.getElementById('focusStatus').textContent = '🎉 Session Complete!';
+                        
+                        logToGitHub({
+                            sessionNumber: sessionsCompleted,
+                            duration: 25,
+                            status: 'Completed',
+                            startTime: sessionStartTime
+                        });
+                        
                         alert('Pomodoro session complete! Time for a break.');
                     }
                 }, 1000);
@@ -241,6 +558,13 @@
             timeLeft = 5 * 60;
             updateDisplay();
             document.getElementById('focusStatus').textContent = '☕ Break Time';
+        }
+
+        function testTimer() {
+            pauseTimer();
+            timeLeft = 10;
+            updateDisplay();
+            document.getElementById('focusStatus').textContent = '🧪 Test Mode (10 seconds)';
         }
 
         // Todo List
@@ -298,7 +622,6 @@
             alert('Notes saved!');
         }
 
-        // Auto-save notes every 30 seconds
         setInterval(() => {
             localStorage.setItem('notes', notesArea.value);
         }, 30000);
