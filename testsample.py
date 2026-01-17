@@ -1,2 +1,2 @@
 name = "kuavula"
-print(f"My name is {name}")
+print(f"My name is a {name}")
