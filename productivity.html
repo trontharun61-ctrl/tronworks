@@ -178,50 +178,126 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 150px;
+            height: 150px;
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.5s;
-            animation: rotate 3s infinite linear;
+            perspective: 1000px;
         }
 
         .floating-tomato.active {
             opacity: 1;
         }
 
-        .tomato-stem {
-            position: absolute;
-            top: -15px;
-            font-size: 30px;
+        .tomato-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateY 4s infinite linear;
         }
 
-        .tomato-timer {
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .tomato-emoji {
-            font-size: 40px;
-            margin-bottom: 5px;
-        }
-
-        @keyframes rotate {
+        @keyframes rotateY {
             0% {
-                transform: rotate(0deg);
+                transform: rotateY(0deg);
             }
             100% {
-                transform: rotate(360deg);
+                transform: rotateY(360deg);
             }
+        }
+
+        .tomato-body {
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #c92a2a 100%);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 
+                inset -10px -10px 20px rgba(0,0,0,0.2),
+                inset 10px 10px 20px rgba(255,255,255,0.1),
+                0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .tomato-stem {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 25px;
+            z-index: 10;
+        }
+
+        .tomato-shadow {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 20px;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.3), transparent);
+            border-radius: 50%;
+        }
+
+        .timer-marks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .timer-mark {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: rgba(255,255,255,0.8);
+            left: 50%;
+            top: 15px;
+            transform-origin: 50% 50px;
+        }
+
+        .timer-mark.major {
+            height: 15px;
+            width: 3px;
+            background: white;
+        }
+
+        .timer-number {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .timer-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+
+        .timer-indicator {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid white;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -10px);
+            z-index: 6;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
         /* Settings Modal */
@@ -312,11 +388,17 @@
     </style>
 </head>
 <body>
-    <!-- Floating Tomato -->
+    <!-- Floating Tomato Timer -->
     <div class="floating-tomato" id="floatingTomato">
-        <div class="tomato-stem">🌿</div>
-        <div class="tomato-emoji">🍅</div>
-        <div class="tomato-timer" id="floatingTimer">25:00</div>
+        <div class="tomato-container">
+            <div class="tomato-stem">🌿</div>
+            <div class="tomato-body">
+                <div class="timer-marks" id="timerMarks"></div>
+                <div class="timer-indicator"></div>
+                <div class="timer-center" id="floatingTimer">25:00</div>
+            </div>
+            <div class="tomato-shadow"></div>
+        </div>
     </div>
 
     <!-- Settings Icon -->
@@ -437,6 +519,29 @@
         function hideTomato() {
             document.getElementById('floatingTomato').classList.remove('active');
         }
+
+        // Create timer marks (like a real Pomodoro timer)
+        function createTimerMarks() {
+            const marksContainer = document.getElementById('timerMarks');
+            const totalMarks = 60; // 60 marks for minutes
+            
+            for (let i = 0; i < totalMarks; i++) {
+                const mark = document.createElement('div');
+                mark.className = 'timer-mark';
+                
+                // Every 5 minutes is a major mark
+                if (i % 5 === 0) {
+                    mark.classList.add('major');
+                }
+                
+                // Rotate each mark around the circle
+                mark.style.transform = `rotate(${i * 6}deg)`;
+                marksContainer.appendChild(mark);
+            }
+        }
+
+        // Initialize timer marks on load
+        createTimerMarks();
 
         // GitHub Configuration
         let githubToken = localStorage.getItem('githubToken') || '';
