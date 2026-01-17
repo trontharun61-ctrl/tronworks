@@ -176,30 +176,51 @@
         /* Floating Tomato */
         .floating-tomato {
             position: fixed;
-            font-size: 80px;
-            animation: float 20s infinite ease-in-out;
-            pointer-events: none;
+            bottom: 30px;
+            right: 30px;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.5s;
+            animation: rotate 3s infinite linear;
         }
 
         .floating-tomato.active {
-            opacity: 0.8;
+            opacity: 1;
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) rotate(0deg);
+        .tomato-stem {
+            position: absolute;
+            top: -15px;
+            font-size: 30px;
+        }
+
+        .tomato-timer {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tomato-emoji {
+            font-size: 40px;
+            margin-bottom: 5px;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
             }
-            25% {
-                transform: translate(80vw, 20vh) rotate(90deg);
-            }
-            50% {
-                transform: translate(70vw, 70vh) rotate(180deg);
-            }
-            75% {
-                transform: translate(10vw, 60vh) rotate(270deg);
+            100% {
+                transform: rotate(360deg);
             }
         }
 
@@ -292,7 +313,11 @@
 </head>
 <body>
     <!-- Floating Tomato -->
-    <div class="floating-tomato" id="floatingTomato">🍅</div>
+    <div class="floating-tomato" id="floatingTomato">
+        <div class="tomato-stem">🌿</div>
+        <div class="tomato-emoji">🍅</div>
+        <div class="tomato-timer" id="floatingTimer">25:00</div>
+    </div>
 
     <!-- Settings Icon -->
     <div class="settings-icon" onclick="openSettings()">⚙️</div>
@@ -509,8 +534,9 @@
         function updateDisplay() {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
-            document.getElementById('timerDisplay').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = timeString;
+            document.getElementById('floatingTimer').textContent = timeString;
         }
 
         function startTimer() {
@@ -608,6 +634,9 @@
             
             updateDisplay();
             document.getElementById('focusStatus').textContent = 'Ready to continue';
+            
+            // Auto-start the timer
+            startTimer();
         }
 
         function testTimer() {
