@@ -595,8 +595,9 @@
             pauseTimer();
             isBreakMode = false;
             document.getElementById('skipBreakBtn').style.display = 'none';
-            resetTimer();
-            alert('Break skipped! Starting new focus session.');
+            timeLeft = focusDuration * 60;
+            updateDisplay();
+            document.getElementById('focusStatus').textContent = 'Ready to focus';
         }
 
         function testTimer() {
