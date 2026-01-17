@@ -1,4 +1,5 @@
 # 📊 SQL Window Functions & Advanced Analytics Practice
+# kingsssss
 
 This repository contains a comprehensive set of **advanced SQL analytical problems** designed to practice **window functions, ranking, cumulative metrics, time-based analysis, and performance optimization**.
 All queries can be executed using **SQLite Online**:
