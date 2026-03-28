@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Kiro settings (contains tokens)
+.kiro/settings/mcp.json
+
+# OS
+.DS_Store
+Thumbs.db
